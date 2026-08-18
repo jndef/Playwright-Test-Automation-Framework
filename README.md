@@ -84,7 +84,7 @@ Environment variables (`.env`) are required for credentials, DB connection, and 
 
 ## Notes / current limitations
 
-- CI pipeline is not wired up for this project yet (see [my API test framework](https://github.com/jndef/api_tests_local) for a working GitLab CI + Allure history/trend setup - the same approach is planned here).
+- CI pipeline is not wired up for this project yet - the same approach is planned here).
 - A handful of `@pytest.mark.flaky(reruns=...)` markers remain on tests with inherent timing sensitivity (e.g., waiting on a second user's session for cross-user scenarios) rather than fully deterministic waits.
 
 ---
