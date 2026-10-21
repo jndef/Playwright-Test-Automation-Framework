@@ -1,0 +1,282 @@
+name: API Tests
+run-name: Test ${{ github.event.inputs.STAGE }} | ${{ github.event.inputs.SUITE }} marker | ${{ github.event.inputs.THREADS }} threads
+on:
+  workflow_dispatch:
+    inputs:
+      STAGE:
+        description: "Choose stage"
+        required: true
+        type: environment
+        default: "http://localhost"
+      SUITE:
+        description: "Functional importance lvl"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - all
+          - regression
+          - smoke
+      SERVICES:
+        description: "Choose app service to run: all, admin, auth, bookmarks, comments, follows, likes, messages, notifications, posts, search, upload, users"
+        required: false
+        type: string
+        default: "all"
+      TAGS:
+        description: "Choose tag to filter run: all, flaky, login, register, positive, negative, moderation"
+        required: false
+        type: string
+        default: "all"
+
+      THREADS:
+        description: "Select threads count"
+        required: false
+        default: "1"
+        type: choice
+        options:
+          - "1"
+          - "3"
+          - "5"
+env: # указываются переменные запуска. !!! Переменные docker-compose должны совпадать с тем, что пропишется тут
+  SUITE: ${{ inputs.SUITE }}
+  SERVICES: ${{ inputs.SERVICES }}
+  TAGS: ${{ inputs.TAGS }}
+  THREADS: ${{ inputs.THREADS }}
+  CI_COMMIT_REF_NAME: ${{ github.ref_name }}
+  CI_COMMIT_SHORT_SHA: ${{ github.sha }}
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest # на базе чего будет работать гитхаб раннер
+    environment: ${{ inputs.STAGE }} # в environment подставится значение окружения из ENV, что задается выше. Эта переменная отвечает за Environment в гитхаб проекте: т. е. последующая джоба, и все переменные окружения будут тянуться из этого ENV
+    steps:
+
+      - uses: actions/checkout@v4 # uses - использование специальных гитхабовских джоб, которые позволяют совершать действия, в данном случае - клонирование репы, т. е. когда раннер поднимет окружение, он внутрь себя склонит нашу репу
+      - uses: actions/checkout@v4
+        with: # делается клон репозитория, но указание with ref дает выбрать, какую именно
+          ref: gh-pages # в данном случае ветку с пейджами
+          path: ./.github/gh-pages # куда клонируем эту ветку внутри раннера
+      - name: Start AUT
+        run: |
+          git clone https://github.com/manikosto/qa-automation-sandbox.git qa-sandbox
+          cd qa-sandbox
+          docker compose up -d --build
+
+      - name: Wait for AUT
+        shell: bash
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS --max-time 3 http://localhost:8000/docs -o /dev/null \
+              && curl -fsS --max-time 3 http://localhost:3000 -o /dev/null; then
+              echo "FE and BE are ready"
+              exit 0
+            fi
+      
+            echo "Waiting for backend ($i/60)..."
+            sleep 2
+          done
+      
+          echo "=== Container status ==="
+          cd qa-sandbox
+          docker compose ps -a
+      
+          echo "=== Backend logs ==="
+          docker compose logs --no-color --tail=150 backend
+      
+          echo "=== Database logs ==="
+          docker compose logs --no-color --tail=100 db
+      
+          exit 1
+
+      - name: Create .env
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+          DB_HOST: ${{ vars.DB_HOST }}
+        run: |
+          echo "$SECRETS_JSON" | jq -r 'to_entries[]
+            | select(.key | test("^(ADMIN|MODERATOR|USER|DB|ROLES)"))
+            | "\(.key)=\(.value)"' > .env
+          echo "DB_HOST=$DB_HOST" >> .env
+
+      - name: Build pytest marker expression
+        id: marker-filter
+        run: python build_pytest_filter.py
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }   # возьми свою версию
+      - name: Install deps and browser
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+      - name: Run Playwright tests
+        env:
+          MARK_EXPR: ${{ steps.marker-filter.outputs.mark_expr }}
+        run: pytest -n ${{ inputs.THREADS }} -m "$MARK_EXPR" --alluredir=allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-${{ inputs.SUITE }}-threads-${{ inputs.THREADS }}
+          path: allure-results
+          retention-days: 7
+          if-no-files-found: warn
+          overwrite: true
+  report:
+    needs: api-tests
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout automation repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Allure history
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: .github/gh-pages
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+
+
+      - name: Prepare Allure metadata
+        env:
+          STAGE: ${{ inputs.STAGE }}
+          SUITE: ${{ inputs.SUITE }}
+          SERVICES: ${{ inputs.SERVICES }}
+          TAGS: ${{ inputs.TAGS }}
+          THREADS: ${{ inputs.THREADS }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p allure-results
+          RUN_TIME="$(date -u +'%Y-%m-%d %H:%M UTC')"
+
+          cat > allure-results/environment.properties <<EOF
+          Stage=${STAGE}
+          Suite=${SUITE}
+          Services=${SERVICES}
+          Tags=${TAGS}
+          Threads=${THREADS}
+          Branch=${GITHUB_REF_NAME}
+          Commit=${GITHUB_SHA}
+          RunNumber=${GITHUB_RUN_NUMBER}
+          RunTimeStart=${RUN_TIME}
+          EOF
+
+          jq -n \
+            --arg reportName "Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES} | ${RUN_TIME}" \
+            --arg reportUrl "https://jndef.github.io/API-test-automation-framework/runs/${RUN_NUMBER}-${RUN_ATTEMPT}/" \
+            --arg buildName "Run #${RUN_NUMBER}, attempt #${RUN_ATTEMPT}" \
+            --arg buildUrl "${RUN_URL}" \
+            --argjson buildOrder "${RUN_NUMBER}" \
+            '{
+              reportName: $reportName,
+              buildOrder: $buildOrder,
+              reportUrl: $reportUrl,
+              name: "GitHub Actions",
+              type: "github",
+              buildName: $buildName,
+              buildUrl: $buildUrl
+            }' > allure-results/executor.json
+
+          echo "=== Environment ==="
+          cat allure-results/environment.properties
+
+          echo "=== Executor ==="
+          cat allure-results/executor.json
+
+      - name: Copy Allure history
+        run: |
+          mkdir -p allure-results/history
+
+          if [ -d ".github/gh-pages/history" ]; then
+            cp -R .github/gh-pages/history/. allure-results/history/
+          fi
+
+      - name: Generate Allure report
+        run: docker compose run --build --rm report
+
+      - name: Persist Allure history and archive report
+        if: github.ref == 'refs/heads/main'
+        run: |
+          test -f allure-report/index.html
+
+          RUN_PATH="runs/${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+
+          # Сохраняем историю для следующего запуска Allure
+          rm -rf .github/gh-pages/history
+          mkdir -p .github/gh-pages/history
+          cp -R allure-report/history/. .github/gh-pages/history/
+
+          # Сохраняем полный отчёт отдельно для перехода из Trends
+          rm -rf ".github/gh-pages/${RUN_PATH}"
+          mkdir -p ".github/gh-pages/${RUN_PATH}"
+          cp -R allure-report/. ".github/gh-pages/${RUN_PATH}/"
+
+          git -C .github/gh-pages config user.name "github-actions[bot]"
+          git -C .github/gh-pages config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git -C .github/gh-pages add history "$RUN_PATH"
+
+          if git -C .github/gh-pages diff --cached --quiet; then
+            echo "No changes to persist"
+          else
+            git -C .github/gh-pages commit \
+              -m "Save Allure history and archive run ${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
+            git -C .github/gh-pages push origin HEAD:gh-pages
+          fi
+
+      - name: Assemble Pages site
+        run: |
+          rm -rf site
+          mkdir -p site/runs
+
+          # Добавляем отчёты предыдущих запусков
+          if [ -d ".github/gh-pages/runs" ]; then
+            cp -R .github/gh-pages/runs/. site/runs/
+          fi
+
+          # Корень сайта будет указывать на последний отчёт
+          cp -R allure-report/. site/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          path: site
+
+  deploy:
+    needs: report
+    if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
