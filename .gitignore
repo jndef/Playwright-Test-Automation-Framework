@@ -4,5 +4,4 @@
 .DS_Store
 allure-results
 logs
-pytest.ini
 debug.py
