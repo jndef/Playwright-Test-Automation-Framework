@@ -2,12 +2,15 @@ import os
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from unittest import skip
+from dotenv import load_dotenv
 
 import requests
+load_dotenv()
 
 from config.credentials import Credentials
 
-API_URL = os.getenv("API_URL") or 'http://localhost:8000'
+STAGE = os.getenv("STAGE", "http://localhost")
+API_URL = f"{STAGE}:8000"
 
 API_AUTH = API_URL + "/api/auth"
 API_POST = API_URL + "/api/posts"

@@ -1,90 +1,88 @@
-# Playwright UI + API Test Automation Framework
+# API Test Automation Framework
 
-A Page Object Model (POM) test automation framework built with **Playwright** and **Pytest**, covering the core flows of a social-network-style web application: feed, comments (with nested replies), likes, bookmarks, follows, direct messages, notifications, search, and admin/moderation.
-The test framework was built on top of QA Automation Sandbox (https://github.com/manikosto/qa-automation-sandbox)
+REST API test automation framework built on top of [QA Automation Sandbox](https://github.com/manikosto/qa-automation-sandbox).
 
-This is a personal project built to apply and demonstrate practical automation QA skills - architecture design, network-level verification, and debugging real framework-level issues (not just "happy path" click-through tests).
+## Stack
+- Python 3.12
+- pytest + Allure
+- Requests (custom request builder, shared `Session`)
+- Pydantic (response validation)
+- PostgreSQL (direct DB assertions alongside API assertions)
+- Docker / docker-compose
+- GitHub Actions (CI)
 
----
+## Architecture
+- `auth/` — authentication, per-role token caching, multi-role service factory
+- `services/` — API service layer: endpoints, request payloads/params, response models.
+  12 services: admin, auth, bookmarks, comments, follows, likes, messages,
+  notifications, posts, search, upload, users
+- `common/` — shared HTTP layer: `BaseAPI`, request builder, base param dataclasses
+- `fixtures/` — pytest fixtures (API-level and DB-level setup/teardown)
+- `tests/` — test suites, one file per service
+- `utils/` — test data generation, DB helper, Allure helper, logging
+- `config/` — base test class, DB config, stage/environment config
+- `pytest.ini` — markers and run configuration
 
-## Tech stack
+## Setup
 
-- **Python** + **Playwright** (sync API)
-- **Pytest** - test runner, fixtures, parametrization
-- **Allure** - reporting, with request/response payloads attached to failed steps
-- **PostgreSQL** (via `psycopg2`) - direct DB access for test data setup/cleanup
-- **Faker** - randomized test data generation
-- **requests** - API-level actions (login, token refresh, seeding posts, follow/unfollow) used to keep UI tests focused on UI behavior, not on repeatable setup
-
-## Architecture highlights
-
-- **Page Object Model with a Row Object pattern** for repeating elements (posts, comments, users in admin lists). Each row/component receives its own scoped `root: Locator` in the constructor - locators for that instance are built once and never re-resolved against the whole page, which avoids a whole class of "wrong element clicked" bugs common with generic string-selector helpers.
-- **Network-level verification, not just DOM checks.** Actions like creating a post/comment, liking, following, and admin moderation are verified via `page.expect_response(...)`, asserting both the outgoing request payload and the returned response - not just that a toast appeared.
-- **Session reuse across tests.** Each role's browser storage state is cached to disk and refreshed only when the token is close to expiring (with a fallback to a fresh login), instead of logging in through the UI on every single test.
-- **Composition over inheritance** for page/component relationships - a page *owns* its components (`self.alert = AlertComponent(...)`) rather than inheriting their behavior, keeping responsibilities isolated.
-- **CSS/test-id locators with anchored regex** (`^post-like-btn-[^-]+$`) preferred over brittle class-based or unanchored selectors, to avoid accidental matches between similarly-prefixed elements (e.g., a comment container vs. a "reply" button inside it).
-
-## Coverage
-
-| Area | Examples |
-|---|---|
-| Auth | login, invalid credentials, registration validation, banned-user login block |
-| Feed / Posts | create post (text/max length/hashtag/image), delete own post, like/unlike, bookmark |
-| Comments | create comment, nested replies (multi-level), like/unlike comment |
-| Follow | follow/unfollow, "follows you" indicator, followers/following counts |
-| Messages | start conversation, send message, unread badge, auto-read on open |
-| Notifications | unread badge, mark all as read, filter unread, click-through to target (post/profile/chat) |
-| Search | search by user, post content, hashtag, empty-state handling |
-| Admin / Moderation | ban/unban, verify/unverify, role change, dashboard stats, moderator post removal |
-
-## Project structure
-
+### 1. Start the application under test
+The framework runs against [QA Automation Sandbox](https://github.com/manikosto/qa-automation-sandbox) —
+clone it separately and start it with Docker:
+```bash
+git clone https://github.com/manikosto/qa-automation-sandbox
+cd qa-automation-sandbox
+docker-compose up --build
 ```
-├── base/                    # BasePage, BaseComponent, shared components (alert, sidebar)
-├── config/                  # credentials, URLs, DB config
-├── helpers/                 # API client, DB handler, storage/session manager, network interceptor, data generator
-├── pages/
-│   ├── feed_page/
-│   │   └── components/      # post, comment, publish forms
-│   ├── messages_page/
-│   │   └── components/      # chat_component, publish_message_componet, start_conversation_flow
-│   ├── notification_page/
-│   ├── admin_page/
-│   ├── search_page/
-│   ├── profile_page/
-│   └── login_page/
-├── fixtures/                 # DB-backed fixtures (cleanup, seed data lookups)
-├── tests/
-├── conftest.py
-└── pytest.ini
-```
-## How to run the app
-- clone the repository containing the test environment and read the build guide
-- configure the .env file by specifying the required details
-- run the test environment locally in Docker
-  
-## Running the tests
+This starts the frontend, backend, PostgreSQL and pgweb that the tests run against.
 
+### 2. Configure this repository
+```bash
+git clone https://github.com/jndef/API-test-automation-framework
+cd API-test-automation-framework
+cp .env.example .env
+```
+Fill in `.env`:
+- `STAGE` — `local` (points at `http://localhost:8000`)
+- Credentials for each role (`ADMIN_*`, `MODERATOR_*`, `USER_BOB_*`, ...) — must match the users seeded in the sandbox
+- `ROLES` — list of role aliases used by the framework
+- `DB_*` — connection details for the sandbox's PostgreSQL
+
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
-playwright install
-
-# run the full suite
-pytest
-
-# run a specific area
-pytest -m feed
-pytest -m messages
-
-# generate an Allure report
-allure serve allure-results
 ```
 
-Environment variables (`.env`) are required for credentials, DB connection, and the target host - see `config/credentials.py`, `config/db_config.py`, and `config/urls.py` for the expected keys.
+## How to run
 
-## Notes / current limitations
+### Locally
+```bash
+pytest
+```
+Markers, verbosity and Allure output path are pre-configured in `pytest.ini`.
+Run a specific suite with a marker, e.g.:
+```bash
+pytest -m smoke
+```
 
-- CI pipeline is not wired up for this project yet - the same approach is planned here).
-- A handful of `@pytest.mark.flaky(reruns=...)` markers remain on tests with inherent timing sensitivity (e.g., waiting on a second user's session for cross-user scenarios) rather than fully deterministic waits.
+### In Docker
+```bash
+docker-compose up smoke-api-test
+```
+Runs the suite in a container against `STAGE`/`SUITE`/`THREADS` from `.env`. Generate an HTML Allure report from the results:
+```bash
+docker-compose up report
+```
 
----
+### CI
+`.github/workflows/tests.yml` runs the suite on demand (`workflow_dispatch`) with a
+selectable marker and thread count, and publishes the Allure report to GitHub Pages
+with history preserved across runs.
+
+## Features
+- Multi-role service factory with per-role token caching
+- Request builder on top of a shared `requests.Session` (connection reuse)
+- Pydantic response validation for every endpoint
+- Direct PostgreSQL assertions alongside API-level assertions
+- Readable Allure parameters for custom dataclasses (no repr noise)
+- Parametrized boundary and negative test data: pagination limits, invalid params,
+  file upload validation (size, extension, content-type mismatches)

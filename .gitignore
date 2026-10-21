@@ -1,0 +1,8 @@
+.env
+.idea
+*__pycache__*
+.DS_Store
+allure-results
+logs
+pytest.ini
+debug.py
