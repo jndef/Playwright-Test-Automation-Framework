@@ -1,4 +1,4 @@
-name: API Tests
+name: UI Tests
 run-name: Test ${{ github.event.inputs.STAGE }} | ${{ github.event.inputs.SUITE }} marker | ${{ github.event.inputs.THREADS }} threads
 on:
   workflow_dispatch:
