@@ -18,12 +18,12 @@ on:
           - regression
           - smoke
       SERVICES:
-        description: "Choose app service to run: all, admin, auth, bookmarks, comments, follows, likes, messages, notifications, posts, search, upload, users"
+        description: "Choose app service to run: all,admin, auth, follow, feed, messages, notifications, search"
         required: false
         type: string
         default: "all"
       TAGS:
-        description: "Choose tag to filter run: all, flaky, login, register, positive, negative, moderation"
+        description: "Choose tag to filter run: all, flaky, login, post, registration, bookmarks, comment, register, like, upload, positive, negative, moderation"
         required: false
         type: string
         default: "all"

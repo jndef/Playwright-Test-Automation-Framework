@@ -9,6 +9,7 @@ from base.base_test import BaseTest
 @allure.epic("Admin")
 @allure.feature("Admin")
 @allure.parent_suite("Admin")
+@pytest.mark.admin
 class TestAdmin(BaseTest):
 
     @allure.story("Change role")

@@ -10,6 +10,7 @@ from helpers.api_helper import ApiHelper
 @allure.epic("Follows")
 @allure.feature("Follows")
 @allure.parent_suite("Follows")
+@pytest.mark.follow
 class TestFollow(BaseTest):
 
     @allure.story("Follow/unfollow a public user")

@@ -9,8 +9,8 @@ from config.urls import Links
 
 @allure.epic("Registration/Login")
 @allure.feature("Registration/Login")
-@pytest.mark.registration
-class TestNewsFeed(BaseTest):
+@pytest.mark.auth
+class TestLoginFeed(BaseTest):
 
     @allure.story("Login as existed user")
     @allure.testcase("Login as existed user")
