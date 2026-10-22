@@ -48,7 +48,7 @@ permissions:
   contents: read
 
 jobs:
-  api-tests:
+  pw-tests:
     runs-on: ubuntu-latest # на базе чего будет работать гитхаб раннер
     environment: ${{ inputs.STAGE }} # в environment подставится значение окружения из ENV, что задается выше. Эта переменная отвечает за Environment в гитхаб проекте: т. е. последующая джоба, и все переменные окружения будут тянуться из этого ENV
     steps:
@@ -124,7 +124,7 @@ jobs:
           if-no-files-found: warn
           overwrite: true
   report:
-    needs: api-tests
+    needs: pw-tests
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -178,7 +178,7 @@ jobs:
 
           jq -n \
             --arg reportName "Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES} | ${RUN_TIME}" \
-            --arg reportUrl "https://jndef.github.io/API-test-automation-framework/runs/${RUN_NUMBER}-${RUN_ATTEMPT}/" \
+            --arg reportUrl "https://jndef.github.io/Playwright-Test-Automation-Framework/runs/${RUN_NUMBER}-${RUN_ATTEMPT}/" \
             --arg buildName "Run #${RUN_NUMBER}, attempt #${RUN_ATTEMPT}" \
             --arg buildUrl "${RUN_URL}" \
             --argjson buildOrder "${RUN_NUMBER}" \
