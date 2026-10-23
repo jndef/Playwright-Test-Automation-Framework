@@ -97,14 +97,14 @@ jobs:
         env:
           SECRETS_JSON: ${{ toJSON(secrets) }}
           DB_HOST: ${{ vars.DB_HOST }}
-          HOST: ${{ vars.HOST }}
+          HOST: ${{ env.HOST }}
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries[]
             | select(.key | test("^(ADMIN|MODERATOR|USER|DB|ROLES)"))
             | "\(.key)=\(.value)"' > .env
           echo "DB_HOST=$DB_HOST" >> .env
-          echo "${HOST:-not set}"
           echo "HOST=$HOST" >> .env
+
       - name: Build pytest marker expression
         id: marker-filter
         run: python build_pytest_filter.py
