@@ -5,8 +5,8 @@ load_dotenv()
 
 
 class Links(BasePage):
-    STAGE = os.getenv("STAGE", "http://localhost")
-    FE_URL= f"{STAGE}:3000"
+    HOST = os.getenv("HOST", "http://localhost")
+    FE_URL= f"{HOST}:3000"
 
     LOGIN_URL = f"{FE_URL}/login"
     HOME_PAGE = f"{FE_URL}/home"

@@ -7,7 +7,7 @@ on:
         description: "Choose stage"
         required: true
         type: environment
-        default: "http://localhost"
+        default: "local_docker"
       SUITE:
         description: "Functional importance lvl"
         required: true

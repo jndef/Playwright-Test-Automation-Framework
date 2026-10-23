@@ -9,8 +9,8 @@ load_dotenv()
 
 from config.credentials import Credentials
 
-STAGE = os.getenv("STAGE", "http://localhost")
-API_URL = f"{STAGE}:8000"
+HOST = os.getenv("HOST", "http://localhost")
+API_URL = f"{HOST}:8000"
 
 API_AUTH = API_URL + "/api/auth"
 API_POST = API_URL + "/api/posts"
