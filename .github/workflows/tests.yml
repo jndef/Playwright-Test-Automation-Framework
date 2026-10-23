@@ -155,6 +155,7 @@ jobs:
       - name: Prepare Allure metadata
         env:
           STAGE: ${{ inputs.STAGE }}
+          HOST: ${{ inputs.HOST }}
           SUITE: ${{ inputs.SUITE }}
           SERVICES: ${{ inputs.SERVICES }}
           TAGS: ${{ inputs.TAGS }}
@@ -170,6 +171,7 @@ jobs:
 
           cat > allure-results/environment.properties <<EOF
           Stage=${STAGE}
+          Host=${HOST}
           Suite=${SUITE}
           Services=${SERVICES}
           Tags=${TAGS}
@@ -189,6 +191,7 @@ jobs:
             '{
               reportName: $reportName,
               buildOrder: $buildOrder,
+              host: $Host,
               reportUrl: $reportUrl,
               name: "GitHub Actions",
               type: "github",
