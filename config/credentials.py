@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import dataclass
 
@@ -5,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-roles = os.getenv("ROLES")
+roles = json.loads(os.getenv("ROLES", "[]"))
 
 
 @dataclass
@@ -25,7 +26,7 @@ class Credentials:
         :param update_role: specified role, used in Credentials helper
         :return:str
         """
-        role:str = os.getenv("role")
+        role=None
         if update_role is not None:
             role = update_role
         if not isinstance(role, str):
