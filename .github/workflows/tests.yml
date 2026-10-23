@@ -99,6 +99,7 @@ jobs:
             | select(.key | test("^(ADMIN|MODERATOR|USER|DB|ROLES)"))
             | "\(.key)=\(.value)"' > .env
           echo "DB_HOST=$DB_HOST" >> .env
+          echo "HOST=$HOST" >> .env
 
       - name: Build pytest marker expression
         id: marker-filter
