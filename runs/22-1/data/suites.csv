@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","6061","Start DM from user profile","Messages","Fri Oct 23 15:14:34 UTC 2026","failed","Fri Oct 23 15:14:40 UTC 2026","TestMessages","test_messages","",""
+"","6081","Opening conversation marks as read","Messages","Fri Oct 23 15:14:42 UTC 2026","failed","Fri Oct 23 15:14:48 UTC 2026","TestMessages","test_messages","",""
+"","874","Send a message","Messages","Fri Oct 23 15:14:32 UTC 2026","passed","Fri Oct 23 15:14:33 UTC 2026","TestMessages","test_messages","",""
+"","5243","Start new DM conversation","Messages","Fri Oct 23 15:14:27 UTC 2026","failed","Fri Oct 23 15:14:32 UTC 2026","TestMessages","test_messages","",""
+"","157","Unread messages badge","Messages","Fri Oct 23 15:14:41 UTC 2026","passed","Fri Oct 23 15:14:41 UTC 2026","TestMessages","test_messages","",""
