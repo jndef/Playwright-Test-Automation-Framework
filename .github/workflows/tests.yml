@@ -97,7 +97,7 @@ jobs:
         env:
           SECRETS_JSON: ${{ toJSON(secrets) }}
           DB_HOST: ${{ vars.DB_HOST }}
-          HOST: ${{ env.HOST }}
+          HOST: ${{ vars.HOST }}
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries[]
             | select(.key | test("^(ADMIN|MODERATOR|USER|DB|ROLES)"))
