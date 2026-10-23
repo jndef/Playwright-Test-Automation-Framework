@@ -172,7 +172,7 @@ jobs:
       - name: Prepare Allure metadata
         env:
           STAGE: ${{ inputs.STAGE }}
-          HOST: ${{ vars.HOST }}
+          HOST: ${{ env.HOST }}
           SUITE: ${{ inputs.SUITE }}
           SERVICES: ${{ inputs.SERVICES }}
           TAGS: ${{ inputs.TAGS }}
