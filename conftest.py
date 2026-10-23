@@ -46,6 +46,7 @@ def go_to_main_page(page: Page):
 def _context_page_for_role(role: str, browser: Browser, auth_helper):
     state_file = auth_helper.get_path_to_file(folders="data", file_name=f"storage_{role}.json")
     auth_helper.storage_file_handler(role)
+    print(f"Storage file mtime: {os.path.getmtime(state_file) if os.path.exists(state_file) else 'missing'}")
     if not os.path.exists(state_file):
         context = browser.new_context(**BROWSER_CONTEXT_OPTS)
         context.set_default_timeout(GLOBAL_TIMEOUT)
@@ -57,6 +58,10 @@ def _context_page_for_role(role: str, browser: Browser, auth_helper):
         context.set_default_timeout(GLOBAL_TIMEOUT)
         page = context.new_page()
         go_to_main_page(page)
+        print(f"URL after navigation: {page.url}")
+        print(f"Storage file: {state_file}")
+        print(f"Storage file exists: {os.path.exists(state_file)}")
+
     return context, page
 
 
