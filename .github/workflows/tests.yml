@@ -94,13 +94,12 @@ jobs:
         env:
           SECRETS_JSON: ${{ toJSON(secrets) }}
           DB_HOST: ${{ vars.DB_HOST }}
+          HOST: ${{ vars.HOST }}
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries[]
             | select(.key | test("^(ADMIN|MODERATOR|USER|DB|ROLES)"))
             | "\(.key)=\(.value)"' > .env
           echo "DB_HOST=$DB_HOST" >> .env
-          echo "HOST=$HOST" >> .env
-
       - name: Build pytest marker expression
         id: marker-filter
         run: python build_pytest_filter.py
@@ -155,7 +154,7 @@ jobs:
       - name: Prepare Allure metadata
         env:
           STAGE: ${{ inputs.STAGE }}
-          HOST: ${{ inputs.HOST }}
+          HOST: ${{ vars.HOST }}
           SUITE: ${{ inputs.SUITE }}
           SERVICES: ${{ inputs.SERVICES }}
           TAGS: ${{ inputs.TAGS }}
