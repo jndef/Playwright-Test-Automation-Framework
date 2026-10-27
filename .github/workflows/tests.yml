@@ -61,7 +61,7 @@ permissions:
 
 jobs:
   pw-tests:
-    runs-on: ubuntu-latest # на базе чего будет работать гитхаб раннер
+    runs-on: ubuntu-24.04 # на базе чего будет работать гитхаб раннер
     environment: ${{ inputs.STAGE }} # в environment подставится значение окружения из ENV, что задается выше. Эта переменная отвечает за Environment в гитхаб проекте: т. е. последующая джоба, и все переменные окружения будут тянуться из этого ENV
     steps:
 
@@ -129,7 +129,7 @@ jobs:
       - name: Run Playwright tests
         env:
           MARK_EXPR: ${{ steps.marker-filter.outputs.mark_expr }}
-        run: pytest -n ${{ inputs.THREADS }} -m "$MARK_EXPR" --alluredir=allure-results
+        run: pytest -n ${{ inputs.THREADS }} -m "$MARK_EXPR" --browser ${{ inputs.BROWSER }} --alluredir=allure-results
 
       - name: Runner resources
         run: free -h && df -h /
@@ -145,7 +145,7 @@ jobs:
   report:
     needs: pw-tests
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       actions: read
@@ -298,7 +298,7 @@ jobs:
   deploy:
     needs: report
     if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
