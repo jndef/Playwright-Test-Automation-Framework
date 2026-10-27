@@ -169,18 +169,19 @@ jobs:
           path: .github/gh-pages
       - name: Install Allure
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends openjdk-21-jre-headless curl tar
+          java -version
 
           curl -fL \
             "https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/${ALLURE_VERSION}/allure-commandline-${ALLURE_VERSION}.tgz" \
             -o allure.tgz
 
-          sudo tar -xzf allure.tgz -C /opt/
-          sudo ln -sf "/opt/allure-${ALLURE_VERSION}/bin/allure" /usr/local/bin/allure
+          mkdir -p "$HOME/.local/opt"
+          tar -xzf allure.tgz -C "$HOME/.local/opt"
 
+          echo "$HOME/.local/opt/allure-${ALLURE_VERSION}/bin" >> "$GITHUB_PATH"
+      
+          "$HOME/.local/opt/allure-${ALLURE_VERSION}/bin/allure" --version
           rm allure.tgz
-          allure --version
       - name: Download Allure results
         uses: actions/download-artifact@v4
         with:
