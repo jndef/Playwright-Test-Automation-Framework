@@ -125,11 +125,20 @@ jobs:
       - name: Install deps and browser
         run: |
           pip install -r requirements.txt
-          playwright install --with-deps ${{ inputs.BROWSER }}
+              if [ "${{ inputs.BROWSER }}" = "all" ]; then
+                python -m playwright install --with-deps chromium firefox webkit
+              else
+                python -m playwright install --with-deps "${{ inputs.BROWSER }}"
+              fi
       - name: Run Playwright tests
         env:
           MARK_EXPR: ${{ steps.marker-filter.outputs.mark_expr }}
-        run: pytest -n ${{ inputs.THREADS }} -m "$MARK_EXPR" --browser ${{ inputs.BROWSER }} --alluredir=allure-results
+        run: |
+          if [ "${{ inputs.BROWSER }}" = "all" ]; then
+          pytest --browser chromium --browser firefox --browser webkit -n ${{ inputs.THREADS }} -m "$MARK_EXPR" 
+          else
+          pytest --browser "${{ inputs.BROWSER }}" -n ${{ inputs.THREADS }} -m "$MARK_EXPR" 
+          fi
 
       - name: Runner resources
         run: free -h && df -h /
@@ -183,7 +192,7 @@ jobs:
       - name: Prepare Allure metadata
         env:
           STAGE: ${{ inputs.STAGE }}
-          HOST: ${{ env.HOST }}
+          HOST: ${{ vars.HOST }}
           BROWSER: ${{ inputs.BROWSER }}
           SUITE: ${{ inputs.SUITE }}
           SERVICES: ${{ inputs.SERVICES }}
