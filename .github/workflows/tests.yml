@@ -8,6 +8,16 @@ on:
         required: true
         type: environment
         default: "local_docker"
+      BROWSER:
+        description: "Choose browser for UI tests"
+        required: true
+        type: choice
+        default: "chromium"
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
       SUITE:
         description: "Functional importance lvl"
         required: true
@@ -39,6 +49,7 @@ on:
           - "5"
 env: # указываются переменные запуска. !!! Переменные docker-compose должны совпадать с тем, что пропишется тут
   SUITE: ${{ inputs.SUITE }}
+  BROWSER: ${{ inputs.BROWSER }}
   SERVICES: ${{ inputs.SERVICES }}
   TAGS: ${{ inputs.TAGS }}
   THREADS: ${{ inputs.THREADS }}
@@ -114,7 +125,7 @@ jobs:
       - name: Install deps and browser
         run: |
           pip install -r requirements.txt
-          playwright install --with-deps chromium
+          playwright install --with-deps ${{ inputs.BROWSER }}
       - name: Run Playwright tests
         env:
           MARK_EXPR: ${{ steps.marker-filter.outputs.mark_expr }}
@@ -126,7 +137,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: allure-results-${{ inputs.SUITE }}-threads-${{ inputs.THREADS }}
+          name: allure-results-${{ inputs.BROWSER }}-${{ inputs.SUITE }}-threads-${{ inputs.THREADS }}
           path: allure-results
           retention-days: 7
           if-no-files-found: warn
@@ -173,6 +184,7 @@ jobs:
         env:
           STAGE: ${{ inputs.STAGE }}
           HOST: ${{ env.HOST }}
+          BROWSER: ${{ inputs.BROWSER }}
           SUITE: ${{ inputs.SUITE }}
           SERVICES: ${{ inputs.SERVICES }}
           TAGS: ${{ inputs.TAGS }}
@@ -188,6 +200,7 @@ jobs:
 
           cat > allure-results/environment.properties <<EOF
           Stage=${STAGE}
+          Browser=${BROWSER}
           Host=${HOST}
           Suite=${SUITE}
           Services=${SERVICES}
@@ -200,7 +213,7 @@ jobs:
           EOF
 
           jq -n \
-            --arg reportName "Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES} | ${RUN_TIME}" \
+            --arg reportName "Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} | ${BROWSER} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES} | ${RUN_TIME}" \
             --arg reportUrl "https://jndef.github.io/Playwright-Test-Automation-Framework/runs/${RUN_NUMBER}-${RUN_ATTEMPT}/" \
             --arg buildName "Run #${RUN_NUMBER}, attempt #${RUN_ATTEMPT}" \
             --arg buildUrl "${RUN_URL}" \
