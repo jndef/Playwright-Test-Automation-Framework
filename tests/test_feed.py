@@ -296,7 +296,6 @@ class TestFeed(BaseTest):
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.regression
     @pytest.mark.comment
-    @pytest.mark.working
     @pytest.mark.dependency(depends=["test_create_reply_to_comment"])
     @pytest.mark.flaky(reruns=3, max_reruns=3)
     def test_expand_nested_replies(self, user: AuthenticatedUser, get_body_of_post_with_replies):

@@ -30,9 +30,11 @@ class TestNotifications(BaseTest):
     @allure.id("TC-NOT-002")
     @allure.title("Mark all as read")
     @allure.severity(Severity.NORMAL)
-    @pytest.mark.parametrize("user", ["admin"], indirect=True)
-    @pytest.mark.parametrize("mark_unread_all", ["Admin"], indirect=True)
+    @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
+    @pytest.mark.parametrize("mark_unread_all", ["user_bob"], indirect=True)
     @pytest.mark.regression
+    @pytest.mark.working
+
     def test_read_all_notifications(self, mark_unread_all, user):
         sidebar = self.get_sidebar(user.page)
 

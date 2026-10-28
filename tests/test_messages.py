@@ -123,8 +123,8 @@ class TestMessages(BaseTest):
     @allure.title("Opening conversation marks as read")
     @allure.severity(Severity.NORMAL)
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
-    @pytest.mark.parametrize("another_user", ["user_alice"], indirect=True)
-    @pytest.mark.parametrize("chat_with", [['user_bob', 'user_alice']])
+    @pytest.mark.parametrize("another_user", ["admin"], indirect=True)
+    @pytest.mark.parametrize("chat_with", [['user_bob', 'admin']])
     @pytest.mark.regression
     def test_auto_read_chat_after_opening(self, user, chat_with, another_user):
         random_message = self.get_rand_data.generate_text(25)
