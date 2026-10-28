@@ -96,7 +96,7 @@ class DataBaseHandler:
             FROM comments 
             WHERE parent_comment_id is not null
             GROUP BY parent_comment_id, post_id
-            HAVING count(id) > 2
+            HAVING count(id) > 1
             ORDER BY post_id, count(id) ASC
         """
         self.cursor.execute(query)

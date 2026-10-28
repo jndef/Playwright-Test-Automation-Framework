@@ -12,7 +12,7 @@ class SideBarComponent(BaseComponent):
         """Get messages badge locator from sidebar"""
         return self.page.get_by_test_id("nav-messages-badge")
 
-    @property
+
     def get_notifications_badge(self) -> Locator:
         """Get notification badge locator from sidebar"""
         return self.page.get_by_test_id("nav-notifications-badge")

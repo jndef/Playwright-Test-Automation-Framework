@@ -114,8 +114,8 @@ class TestMessages(BaseTest):
     @pytest.mark.regression
     def test_unread_messages_badge(self, user):
         sidebar = self.get_sidebar(user.page)
-        expect(sidebar.get_notifications_badge).to_be_visible()
-        assert int(sidebar.get_notifications_badge.inner_text()) > 0
+        expect(sidebar.get_notifications_badge()).to_be_visible()
+        assert int(sidebar.get_notifications_badge().inner_text()) > 0
 
     @allure.story("Send a message")
     @allure.id("TC-MSG-004")
@@ -136,7 +136,7 @@ class TestMessages(BaseTest):
         chat_between_users = messages_page.search_conversation_flow(recipient_name)
 
         chat_between_users.create_message_with_check(random_message)
-
+        chat_between_users.page.reload()
         expect(chat_between_users._get_message_by_text(random_message)).to_be_visible()
 
         user2_sidebar = self.get_sidebar(another_user.page)

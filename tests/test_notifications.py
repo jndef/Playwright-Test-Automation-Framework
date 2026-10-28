@@ -22,7 +22,7 @@ class TestNotifications(BaseTest):
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.smoke
     def test_check_notifications_badge(self, user):
-        notification_badge_element = self.get_sidebar(user.page).get_notifications_badge
+        notification_badge_element = self.get_sidebar(user.page).get_notifications_badge()
         expect(notification_badge_element).to_be_visible()
 
     @allure.story("Mark all as read")
@@ -41,11 +41,11 @@ class TestNotifications(BaseTest):
         notification_page = self.notifications_page(user.page)
 
         expect(notification_page.get_total_unread_badge()).to_be_visible()
-        expect(sidebar.get_notifications_badge).to_be_visible()
+        expect(sidebar.get_notifications_badge()).to_be_visible()
 
         notification_page.read_all_notification_with_check()
         expect(notification_page.get_total_unread_badge()).not_to_be_visible()
-        expect(sidebar.get_notifications_badge).not_to_be_visible()
+        expect(sidebar.get_notifications_badge()).not_to_be_visible()
         assert not notification_page.is_unread_all()
 
     @allure.story("Filter unread only")
@@ -102,7 +102,7 @@ class TestNotifications(BaseTest):
 
         user1_sidebar = self.get_sidebar(user.page)
 
-        user1_notification_badge = user1_sidebar.get_notifications_badge
+        user1_notification_badge = user1_sidebar.get_notifications_badge()
         user1_notification_count = int(user1_notification_badge.inner_text())
         user1_feed_page = self.feed_page(user.page)
         user1_feed_page.create_post_with_check(post_text=rand_post_body)
@@ -115,5 +115,5 @@ class TestNotifications(BaseTest):
 
         # user1_sidebar.navigate_to("notifications")
         user1_feed_page.page.reload()
-        expect(user1_sidebar.get_notifications_badge).to_be_visible()
-        expect(user1_sidebar.get_notifications_badge).to_have_text(str(user1_notification_count + 1))
+        expect(user1_sidebar.get_notifications_badge()).to_be_visible()
+        expect(user1_sidebar.get_notifications_badge()).to_have_text(str(user1_notification_count + 1))
