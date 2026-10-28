@@ -1,0 +1,1 @@
+{"reportName":"[2026-10-28 12:16 UTC]. Run #35 attempt 2 (dev) | chromium | regression | 1 threads | Services: all","testRuns":[],"statistic":{"failed":6,"broken":1,"skipped":0,"passed":14,"unknown":0,"total":21},"time":{"start":1793189689636,"stop":1793189744608,"duration":54972,"minDuration":0,"maxDuration":6261,"sumDuration":43401}}
