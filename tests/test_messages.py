@@ -123,9 +123,10 @@ class TestMessages(BaseTest):
     @allure.title("Opening conversation marks as read")
     @allure.severity(Severity.NORMAL)
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
-    @pytest.mark.parametrize("another_user", ["admin"], indirect=True)
-    @pytest.mark.parametrize("chat_with", [['user_bob', 'admin']])
+    @pytest.mark.parametrize("another_user", ["user_alice"], indirect=True)
+    @pytest.mark.parametrize("chat_with", [['user_bob','user_alice']])
     @pytest.mark.regression
+    @pytest.mark.working
     def test_auto_read_chat_after_opening(self, user, chat_with, another_user):
         random_message = self.get_rand_data.generate_text(25)
         sidebar = self.get_sidebar(user.page)
@@ -145,13 +146,12 @@ class TestMessages(BaseTest):
         user2_sidebar.navigate_to("messages")
         user2_messages_page = self.messages_page(another_user.page)
 
-        chat_with_user: Locator = user2_messages_page.get_conversation_by_name_or_last_message(random_message)
-        chat_unread_count = user2_messages_page.get_conversation_unread_count(chat_with_user)
-        chat_with_user.click()
+        user_2_chat_with_user_1: Locator = user2_messages_page.get_conversation_by_name_or_last_message(random_message)
+        user_2_chat_unread_count:int = user2_messages_page.get_conversation_unread_count(user_2_chat_with_user_1)
+        user_2_chat_with_user_1.click()
 
-        if 1 <= total_message_unread_count and 1 <= chat_unread_count and chat_unread_count == total_message_unread_count:
-            expect(user2_sidebar.get_messages_badge).not_to_be_visible()
-        else:
-            new_total_unread_count = str(chat_unread_count - 1)
-
+        if 1 <= total_message_unread_count and 1 <= user_2_chat_unread_count:
+            new_total_unread_count = str(total_message_unread_count - user_2_chat_unread_count)
             expect(user2_sidebar.get_messages_badge).to_have_text(new_total_unread_count)
+        else:
+            expect(user2_sidebar.get_messages_badge).not_to_be_visible()

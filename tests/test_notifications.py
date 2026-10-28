@@ -33,7 +33,6 @@ class TestNotifications(BaseTest):
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.parametrize("mark_unread_all", ["user_bob"], indirect=True)
     @pytest.mark.regression
-    @pytest.mark.working
 
     def test_read_all_notifications(self, mark_unread_all, user):
         sidebar = self.get_sidebar(user.page)
