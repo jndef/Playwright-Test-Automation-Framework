@@ -94,9 +94,10 @@ class TestNotifications(BaseTest):
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.parametrize("another_user", ["user_alice"], indirect=True)
     @pytest.mark.parametrize("post_author", ["bob"])
+    @pytest.mark.parametrize("mark_unread_all", ["user_bob"], indirect=True)
     @pytest.mark.smoke
     @pytest.mark.like
-    def test_get_notification_on_post_like(self, user, another_user, post_author):
+    def test_get_notification_on_post_like(self, user, another_user, post_author, mark_unread_all):
         rand_post_body: str = self.get_rand_data.generate_text(45)
 
         user1_sidebar = self.get_sidebar(user.page)

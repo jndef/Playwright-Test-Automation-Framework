@@ -234,7 +234,7 @@ class TestFeed(BaseTest):
     @pytest.mark.regression
     @pytest.mark.comment
     @pytest.mark.working
-    @pytest.mark.dependency(name="create_reply")
+    @pytest.mark.dependency(name="test_create_reply")
     def test_create_reply_to_comment(self, user: AuthenticatedUser, reply_body):
         used_reply_body: str = self.get_rand_data.generate_text(20) if reply_body is None else reply_body + str(
             self.get_rand_data.generate_number(0, 100))
@@ -303,7 +303,8 @@ class TestFeed(BaseTest):
     @pytest.mark.regression
     @pytest.mark.comment
     @pytest.mark.flaky(reruns=3, max_reruns=3)
-    @pytest.mark.dependency(depends=["create_reply"])
+    @pytest.mark.dependency(depends=["test_create_reply"])
+    @pytest.mark.order(-1)
     def test_expand_nested_replies(self, user: AuthenticatedUser, get_body_of_post_with_replies):
         feed_page = self.feed_page(user.page)
         post_body_with_replies = get_body_of_post_with_replies
