@@ -246,7 +246,9 @@ class TestFeed(BaseTest):
         used_comment.create_reply(used_reply_body)
 
         created_reply = used_comment.get_reply_by_text(used_reply_body)
-        used_comment.create_reply(used_reply_body)
+        another_used_reply_body: str = self.get_rand_data.generate_text(20) if reply_body is None else reply_body + str(
+            self.get_rand_data.generate_number(0, 100))
+        used_comment.create_reply(another_used_reply_body)
 
         expect(created_reply.comment_locator).to_be_visible()
         expect(created_reply.comment_locator).to_contain_text(used_reply_body, use_inner_text=True)
