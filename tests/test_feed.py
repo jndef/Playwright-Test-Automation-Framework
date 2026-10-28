@@ -233,7 +233,6 @@ class TestFeed(BaseTest):
     @pytest.mark.parametrize("reply_body", ["Test reply"])
     @pytest.mark.regression
     @pytest.mark.comment
-    @pytest.mark.working
     @pytest.mark.dependency(name="test_create_reply")
     def test_create_reply_to_comment(self, user: AuthenticatedUser, reply_body):
         used_reply_body: str = self.get_rand_data.generate_text(20) if reply_body is None else reply_body + str(

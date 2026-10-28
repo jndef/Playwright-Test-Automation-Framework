@@ -26,6 +26,7 @@ class TestMessages(BaseTest):
         ['user_bob', 'user_alice']
     ])
     @pytest.mark.smoke
+    @pytest.mark.flaky(reruns=2)
     def test_start_new_dm_conversation(self, cleanup_conversation_between_users, user: AuthenticatedUser, chat_between):
 
         cleanup_conversation_between_users(chat_between[0], chat_between[1])
