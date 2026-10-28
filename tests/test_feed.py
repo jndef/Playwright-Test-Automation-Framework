@@ -246,6 +246,8 @@ class TestFeed(BaseTest):
         used_comment.create_reply(used_reply_body)
 
         created_reply = used_comment.get_reply_by_text(used_reply_body)
+        used_comment.create_reply(used_reply_body)
+
         expect(created_reply.comment_locator).to_be_visible()
         expect(created_reply.comment_locator).to_contain_text(used_reply_body, use_inner_text=True)
 
