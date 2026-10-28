@@ -68,8 +68,8 @@ def _context_page_for_role(role: str, browser: Browser, auth_helper):
 @pytest.fixture(scope="session")
 def browser_type_launch_args():
     return {
-        # "headless": os.path.exists('/.dockerenv'),
-        "headless": True
+        "headless": False if os.getenv("STAGE") == "local" else True,
+        # "headless": True
         # "slow_mo": 1700,
 
     }

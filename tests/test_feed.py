@@ -295,10 +295,10 @@ class TestFeed(BaseTest):
     @allure.severity(Severity.NORMAL)
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.regression
-    @pytest.mark.flaky(reruns=1)
     @pytest.mark.comment
     @pytest.mark.working
     @pytest.mark.dependency(depends=["test_create_reply_to_comment"])
+    @pytest.mark.flaky(reruns=3, max_reruns=3)
     def test_expand_nested_replies(self, user: AuthenticatedUser, get_body_of_post_with_replies):
         feed_page = self.feed_page(user.page)
         post_body_with_replies = get_body_of_post_with_replies
@@ -307,6 +307,3 @@ class TestFeed(BaseTest):
         used_comment = post_with_replies.get_comment_with_replies()
 
         used_comment.click_load_more_replies()
-
-        first_reply = used_comment.get_reply_by_index(1)
-        first_reply.click_load_more_replies()

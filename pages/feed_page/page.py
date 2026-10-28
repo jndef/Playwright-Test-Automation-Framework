@@ -81,11 +81,11 @@ class FeedPage(BasePage):
         first_match= None
         max_page = 8
         current_page = 1
-        load_more_btn = self.page.get_by_role("button", name="Load more")
         while first_match is None and current_page <= max_page:
             first_match = self.get_post_by_text(post_text) if self.get_post_by_text(post_text).post_locator.is_visible() else None
             if first_match is not None:
                 return first_match
+            load_more_btn = self.page.get_by_role("button", name="Load more")
             if load_more_btn.is_visible():
                 load_more_btn.click()
                 current_page += 1
