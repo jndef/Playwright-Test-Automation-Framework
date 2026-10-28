@@ -15,6 +15,7 @@ from pages.feed_page.page import FeedPage
 @allure.epic("Feed")
 @allure.feature("Posts")
 @allure.parent_suite("Posts")
+@allure.title("Tests Feed")
 @pytest.mark.feed
 class TestFeed(BaseTest):
 
@@ -297,6 +298,7 @@ class TestFeed(BaseTest):
     @pytest.mark.flaky(reruns=1)
     @pytest.mark.comment
     @pytest.mark.working
+    @pytest.mark.dependency(depends=["test_create_reply_to_comment"])
     def test_expand_nested_replies(self, user: AuthenticatedUser, get_body_of_post_with_replies):
         feed_page = self.feed_page(user.page)
         post_body_with_replies = get_body_of_post_with_replies
