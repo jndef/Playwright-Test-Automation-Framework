@@ -1,0 +1,1 @@
+{"reportName":"Run #37 attempt 1 (dev) | chromium | regression | 1 threads | Services: all","testRuns":[],"statistic":{"failed":0,"broken":2,"skipped":0,"passed":19,"unknown":0,"total":21},"time":{"start":1793191311582,"stop":1793191334760,"duration":23178,"minDuration":0,"maxDuration":2077,"sumDuration":12846}}
