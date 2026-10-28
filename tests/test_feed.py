@@ -233,7 +233,8 @@ class TestFeed(BaseTest):
     @pytest.mark.parametrize("reply_body", ["Test reply"])
     @pytest.mark.regression
     @pytest.mark.comment
-    @pytest.mark.flaky(reruns=1)
+    @pytest.mark.working
+
     def test_create_reply_to_comment(self, user: AuthenticatedUser, reply_body):
         used_reply_body: str = self.get_rand_data.generate_text(20) if reply_body is None else reply_body + str(
             self.get_rand_data.generate_number(0, 100))
@@ -248,10 +249,11 @@ class TestFeed(BaseTest):
         created_reply = used_comment.get_reply_by_text(used_reply_body)
         another_used_reply_body: str = self.get_rand_data.generate_text(20) if reply_body is None else reply_body + str(
             self.get_rand_data.generate_number(0, 100))
-        used_comment.create_reply(another_used_reply_body)
 
         expect(created_reply.comment_locator).to_be_visible()
         expect(created_reply.comment_locator).to_contain_text(used_reply_body, use_inner_text=True)
+        used_comment.click_reply_btn()
+        used_comment.create_reply(another_used_reply_body)
 
     @allure.story("Bookmark and view bookmarks")
     @allure.testcase("Bookmark and view bookmarks")

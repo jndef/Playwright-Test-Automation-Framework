@@ -126,7 +126,6 @@ class TestMessages(BaseTest):
     @pytest.mark.parametrize("another_user", ["user_alice"], indirect=True)
     @pytest.mark.parametrize("chat_with", [['user_bob','user_alice']])
     @pytest.mark.regression
-    @pytest.mark.working
     def test_auto_read_chat_after_opening(self, user, chat_with, another_user):
         random_message = self.get_rand_data.generate_text(25)
         sidebar = self.get_sidebar(user.page)
