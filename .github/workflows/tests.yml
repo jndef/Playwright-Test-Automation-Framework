@@ -65,8 +65,8 @@ jobs:
     environment: ${{ inputs.STAGE }} # в environment подставится значение окружения из ENV, что задается выше. Эта переменная отвечает за Environment в гитхаб проекте: т. е. последующая джоба, и все переменные окружения будут тянуться из этого ENV
     steps:
 
-      - uses: actions/checkout@v4 # uses - использование специальных гитхабовских джоб, которые позволяют совершать действия, в данном случае - клонирование репы, т. е. когда раннер поднимет окружение, он внутрь себя склонит нашу репу
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7 # uses - использование специальных гитхабовских джоб, которые позволяют совершать действия, в данном случае - клонирование репы, т. е. когда раннер поднимет окружение, он внутрь себя склонит нашу репу
+      - uses: actions/checkout@v7
         with: # делается клон репозитория, но указание with ref дает выбрать, какую именно
           ref: gh-pages # в данном случае ветку с пейджами
           path: ./.github/gh-pages # куда клонируем эту ветку внутри раннера
@@ -88,7 +88,7 @@ jobs:
               exit 0
             fi
       
-            echo "Waiting for backend ($i/60)..."
+            echo "Waiting for application ($i/60)..."
             sleep 2
           done
       
@@ -120,8 +120,9 @@ jobs:
         id: marker-filter
         run: python build_pytest_filter.py
 
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.14" }   # возьми свою версию
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"   # возьми свою версию
       - name: Install deps and browser
         run: |
           pip install -r requirements.txt
@@ -135,15 +136,15 @@ jobs:
           MARK_EXPR: ${{ steps.marker-filter.outputs.mark_expr }}
         run: |
           if [ "${{ inputs.BROWSER }}" = "all" ]; then
-          pytest --browser chromium --browser firefox --browser webkit -n ${{ inputs.THREADS }} -m "$MARK_EXPR" 
+          pytest --browser chromium --browser firefox --browser webkit -n "${{ inputs.THREADS }}" -m "$MARK_EXPR" 
           else
-          pytest --browser "${{ inputs.BROWSER }}" -n ${{ inputs.THREADS }} -m "$MARK_EXPR" 
+          pytest --browser "${{ inputs.BROWSER }}" -n "${{ inputs.THREADS }}" -m "$MARK_EXPR" 
           fi
 
       - name: Runner resources
         run: free -h && df -h /
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: allure-results-${{ inputs.BROWSER }}-${{ inputs.SUITE }}-threads-${{ inputs.THREADS }}
@@ -160,10 +161,10 @@ jobs:
       actions: read
     steps:
       - name: Checkout automation repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout Allure history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: gh-pages
           path: .github/gh-pages
@@ -177,13 +178,12 @@ jobs:
 
           mkdir -p "$HOME/.local/opt"
           tar -xzf allure.tgz -C "$HOME/.local/opt"
-
           echo "$HOME/.local/opt/allure-${ALLURE_VERSION}/bin" >> "$GITHUB_PATH"
       
           "$HOME/.local/opt/allure-${ALLURE_VERSION}/bin/allure" --version
           rm allure.tgz
       - name: Download Allure results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: allure-results-*
           path: allure-results
@@ -300,7 +300,7 @@ jobs:
           cp -R allure-report/. site/
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: site
