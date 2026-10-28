@@ -74,10 +74,10 @@ class SearchPage(BasePage):
         :return:
         """
         if self.chosen_search_area in ["users", "hashtags"]:
-            self.chosen_result_url = Links.HOST + chosen_result.get_attribute("href")
+            self.chosen_result_url = Links.FE_URL + chosen_result.get_attribute("href")
         elif self.chosen_search_area == "posts":
             post_url = chosen_result.get_by_test_id(re.compile(r"^post-comment-btn-[^-]+$")).get_attribute("href")
-            self.chosen_result_url = Links.HOST + post_url
+            self.chosen_result_url = Links.FE_URL + post_url
         return self
 
     @allure.step(f"Fill search input")

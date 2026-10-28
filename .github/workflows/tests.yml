@@ -223,7 +223,7 @@ jobs:
           EOF
 
           jq -n \
-            --arg reportName "[${RUN_TIME}]. Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} (${BRANCH}) | ${BROWSER} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES}" \
+            --arg reportName "Run #${GITHUB_RUN_NUMBER} attempt ${RUN_ATTEMPT} (${BRANCH}) | ${BROWSER} | ${SUITE} | ${THREADS} threads | Services: ${SERVICES}" \
             --arg reportUrl "https://jndef.github.io/Playwright-Test-Automation-Framework/runs/${RUN_NUMBER}-${RUN_ATTEMPT}/" \
             --arg buildName "Run #${RUN_NUMBER}, attempt #${RUN_ATTEMPT}" \
             --arg buildUrl "${RUN_URL}" \
