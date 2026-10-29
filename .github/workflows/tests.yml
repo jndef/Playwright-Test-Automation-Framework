@@ -272,6 +272,30 @@ jobs:
           mkdir -p ".github/gh-pages/${RUN_PATH}"
           cp -R allure-report/. ".github/gh-pages/${RUN_PATH}/"
 
+      - name: Prune old Allure reports
+        run: |
+          # Оставляем только последние 30 архивов
+          REPORTS_DIR=".github/gh-pages/runs"
+          KEEP=30
+
+          mapfile -t reports < <(
+            find "$REPORTS_DIR" \
+              -mindepth 1 -maxdepth 1 -type d \
+              -printf '%f\n' | sort -V
+          )
+          total=${#reports[@]}
+
+          if (( total > KEEP )); then
+            remove_count=$((total - KEEP))
+
+            for ((i=0; i<remove_count; i++)); do
+              echo "Removing old Allure report: ${reports[$i]}"
+              rm -rf -- "$REPORTS_DIR/${reports[$i]}"
+            done
+          fi
+
+      - name: Commit and push Allure reports
+        run:
           git -C .github/gh-pages config user.name "github-actions[bot]"
           git -C .github/gh-pages config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"

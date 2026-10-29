@@ -21,7 +21,7 @@ class TestSearch(BaseTest):
     @allure.severity(Severity.NORMAL)
     @pytest.mark.parametrize("user", ["user_bob"], indirect=True)
     @pytest.mark.parametrize("data_for_search", [["users", "alice_dev"]])
-    @pytest.mark.regression
+    @pytest.mark.smoke
     def test_search_by_name(self, user, data_for_search):
         search_by, search_criteria = data_for_search[0], data_for_search[1]
 
@@ -44,7 +44,7 @@ class TestSearch(BaseTest):
     @allure.severity(Severity.NORMAL)
     @pytest.mark.parametrize("user", ["user_eve"], indirect=True)
     @pytest.mark.parametrize("data_for_search", [["posts", "Writing good documentation is an art form"]])
-    @pytest.mark.regression
+    @pytest.mark.smoke
     def test_search_by_posts(self, user, data_for_search):
         search_by, searched_post_text = data_for_search[0], data_for_search[1]
 

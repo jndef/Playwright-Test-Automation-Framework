@@ -130,7 +130,7 @@ class TestAdmin(BaseTest):
     @allure.feature("Posts")
     @allure.parent_suite("Posts")
     @pytest.mark.parametrize("user", ["moderator"], indirect=True)
-    @pytest.mark.smoke
+    @pytest.mark.regression
     @pytest.mark.post
     @pytest.mark.moderation
     def test_delete_post_at_moderation_page(self, user):
