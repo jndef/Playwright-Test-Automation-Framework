@@ -38,7 +38,7 @@ class TestMessages(BaseTest):
 
         recipient_name = chat_between[1].split("_")[1]
         messages_page.search_conversation_flow(recipient_name)
-        messages_page.page.go_back()
+        sidebar.navigate_to("messages")
 
         expect(messages_page.get_conversation_by_name_or_last_message(recipient_name)).to_be_visible()
 
