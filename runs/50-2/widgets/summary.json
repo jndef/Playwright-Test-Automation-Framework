@@ -1,0 +1,1 @@
+{"reportName":"Run #50 attempt 2 (main) | chromium | smoke | 1 threads | Services: all","testRuns":[],"statistic":{"failed":1,"broken":0,"skipped":0,"passed":23,"unknown":0,"total":24},"time":{"start":1793272921360,"stop":1793272961013,"duration":39653,"minDuration":181,"maxDuration":5461,"sumDuration":20075}}
