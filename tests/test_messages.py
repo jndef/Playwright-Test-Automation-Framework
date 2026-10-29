@@ -26,7 +26,8 @@ class TestMessages(BaseTest):
         ['user_bob', 'user_alice']
     ])
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=2)
+    # @pytest.mark.flaky(reruns=1)
+    @pytest.mark.working
     def test_start_new_dm_conversation(self, cleanup_conversation_between_users, user: AuthenticatedUser, chat_between):
 
         cleanup_conversation_between_users(chat_between[0], chat_between[1])
@@ -38,6 +39,7 @@ class TestMessages(BaseTest):
         recipient_name = chat_between[1].split("_")[1]
         messages_page.search_conversation_flow(recipient_name)
         messages_page.page.go_back()
+
         expect(messages_page.get_conversation_by_name_or_last_message(recipient_name)).to_be_visible()
 
     @allure.story("Send a message")
@@ -142,7 +144,7 @@ class TestMessages(BaseTest):
 
         user2_sidebar = self.get_sidebar(another_user.page)
         user2_sidebar.page.reload()
-        total_message_unread_count = int(user2_sidebar.get_messages_badge.inner_text())
+        total_message_unread_count = int(user2_sidebar.get_messages_badge().inner_text())
         user2_sidebar.navigate_to("messages")
         user2_messages_page = self.messages_page(another_user.page)
 
@@ -152,6 +154,6 @@ class TestMessages(BaseTest):
 
         if 1 <= total_message_unread_count and 1 <= user_2_chat_unread_count:
             new_total_unread_count = str(total_message_unread_count - user_2_chat_unread_count)
-            expect(user2_sidebar.get_messages_badge).to_have_text(new_total_unread_count)
+            expect(user2_sidebar.get_messages_badge()).to_have_text(new_total_unread_count)
         else:
-            expect(user2_sidebar.get_messages_badge).not_to_be_visible()
+            expect(user2_sidebar.get_messages_badge()).not_to_be_visible()

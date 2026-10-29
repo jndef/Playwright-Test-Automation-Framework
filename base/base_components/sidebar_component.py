@@ -1,5 +1,7 @@
+import re
+
 import allure
-from playwright.sync_api import Locator, Page
+from playwright.sync_api import Locator, Page, expect
 from base.base_component import BaseComponent
 
 
@@ -7,7 +9,6 @@ class SideBarComponent(BaseComponent):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def get_messages_badge(self) -> Locator:
         """Get messages badge locator from sidebar"""
         return self.page.get_by_test_id("nav-messages-badge")
@@ -38,3 +39,4 @@ class SideBarComponent(BaseComponent):
         with allure.step(f"Open page at sidebar: {navigate_to}"):
             locator_navigate_to: Locator = self._get_navigation_locator(navigate_to)
             locator_navigate_to.click()
+            expect(self.page).to_have_url(re.compile(f".*{navigate_to}"))
