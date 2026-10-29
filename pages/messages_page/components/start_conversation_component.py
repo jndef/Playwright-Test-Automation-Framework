@@ -1,6 +1,6 @@
 import re
 import allure
-from playwright.sync_api import Locator, Page
+from playwright.sync_api import Locator, Page, expect
 from base.base_component import BaseComponent
 from pages.messages_page.components.chat_component import ChatComponent
 
@@ -67,6 +67,8 @@ class StartConversationComponent(BaseComponent):
         :param recipient_info:str
         :return: ChatComponent
         """
+        current_url = self.page.url
         conversation: Locator = self._get_search_conversations_results_list.filter(has_text=recipient_info)
         conversation.click()
+        expect(self.page).not_to_have_url(current_url)
         return ChatComponent(self.page)
