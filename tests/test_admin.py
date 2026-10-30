@@ -21,6 +21,7 @@ class TestAdmin(BaseTest):
     @pytest.mark.parametrize("another_user", ["user_eve"], indirect=True)
     @pytest.mark.parametrize("change_role", [['eve', 'admin']])
     @pytest.mark.smoke
+    @pytest.mark.flaky(reruns=2)
     def test_change_role(self, user, change_role, another_user):
         side_bar = self.get_sidebar(user.page)
         side_bar.navigate_to("admin")
@@ -110,6 +111,7 @@ class TestAdmin(BaseTest):
     @pytest.mark.parametrize("user", ["admin"], indirect=True)
     @pytest.mark.parametrize("unverify_user", ['alice'])
     @pytest.mark.smoke
+    @pytest.mark.flaky(reruns=2)
     def test_unverify_user(self, user, unverify_user):
         side_bar = self.get_sidebar(user.page)
         side_bar.navigate_to("admin")

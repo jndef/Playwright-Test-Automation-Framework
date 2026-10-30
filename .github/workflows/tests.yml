@@ -33,7 +33,7 @@ on:
         type: string
         default: "all"
       TAGS:
-        description: "Choose tag to filter run: all, flaky, login, post, registration, bookmarks, comment, register, like, upload, positive, negative, moderation"
+        description: "Choose tag to filter run: all, flaky, login, post, comment, register, like, moderation"
         required: false
         type: string
         default: "all"
