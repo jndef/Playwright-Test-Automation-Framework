@@ -1,6 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","1384","Like and unlike a post","Posts","Tue Oct 27 17:04:54 UTC 2026","passed","Tue Oct 27 17:04:55 UTC 2026","TestFeed","test_feed","",""
-"","1027","Create a new post with tag","Posts","Tue Oct 27 17:04:49 UTC 2026","passed","Tue Oct 27 17:04:50 UTC 2026","TestFeed","test_feed","",""
-"","5214","404 on non-existent resource","Posts","Tue Oct 27 17:04:43 UTC 2026","failed","Tue Oct 27 17:04:48 UTC 2026","TestFeed","test_feed","",""
-"","818","Create a new post","Posts","Tue Oct 27 17:04:41 UTC 2026","passed","Tue Oct 27 17:04:42 UTC 2026","TestFeed","test_feed","",""
-"","1981","Add comment to post","Posts","Tue Oct 27 17:04:50 UTC 2026","passed","Tue Oct 27 17:04:52 UTC 2026","TestFeed","test_feed","",""
