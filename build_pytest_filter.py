@@ -3,8 +3,7 @@ import sys
 
 ALLOWED_SUITES = {"smoke", "regression"}
 ALLOWED_SERVICES = {"all", "admin", "auth", "follow", "feed", "messages", "notifications", "search"}
-ALLOWED_TAGS = {"all", "flaky", "login", "post", "registration", "bookmarks", "comment", "register", "like", "upload",
-                "positive", "negative", "moderation"}
+ALLOWED_TAGS = {"all", "flaky", "login", "post", "comment", "register", "like", "moderation"}
 
 
 def parse_csv(name, allowed):

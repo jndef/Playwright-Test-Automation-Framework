@@ -9,6 +9,7 @@ from config.urls import Links
 
 @allure.epic("Registration/Login")
 @allure.feature("Registration/Login")
+@allure.parent_suite("Registration/Login")
 @pytest.mark.auth
 class TestLoginFeed(BaseTest):
 
@@ -34,7 +35,7 @@ class TestLoginFeed(BaseTest):
     @allure.title("Login with wrong password")
     @allure.severity(Severity.CRITICAL)
     @pytest.mark.parametrize("users_creds_to_login", ["user_bob"])
-    @pytest.mark.smoke
+    @pytest.mark.regression
     @pytest.mark.login
     def test_incorrect_login_to_account(self, default_page, users_creds_to_login):
         login_page = self.login_page(default_page)
@@ -51,7 +52,7 @@ class TestLoginFeed(BaseTest):
     @allure.title("Register with duplicate email")
     @allure.severity(Severity.CRITICAL)
     @pytest.mark.parametrize("existed_user_to_register", ["user_bob"])
-    @pytest.mark.smoke
+    @pytest.mark.regression
     @pytest.mark.register
     def test_register_existed_account(self, default_page, existed_user_to_register):
         rand_register_data = self.get_rand_data.get_register_rand_data_object()
@@ -71,7 +72,7 @@ class TestLoginFeed(BaseTest):
     @allure.id("TC-AUTH-008")
     @allure.title("Username validation rejects spaces")
     @allure.severity(Severity.CRITICAL)
-    @pytest.mark.smoke
+    @pytest.mark.regression
     @pytest.mark.register
     def test_register_with_invalid_data_spaces(self, default_page):
         rand_register_data = self.get_rand_data.get_register_rand_data_object()
@@ -92,7 +93,7 @@ class TestLoginFeed(BaseTest):
     @allure.severity(Severity.BLOCKER)
     @pytest.mark.parametrize("user", ["admin"], indirect=True)
     @pytest.mark.parametrize("banned_user_to_login", ["user_eve"])
-    @pytest.mark.smoke
+    @pytest.mark.regression
     def test_attempt_to_login_as_banned_user(self, user, default_page, banned_user_to_login):
         side_bar = self.get_sidebar(user.page)
         side_bar.navigate_to("admin")
