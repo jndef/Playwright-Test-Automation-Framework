@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","658","UnBan user","Admin","Fri Oct 30 12:16:59 UTC 2026","passed","Fri Oct 30 12:17:00 UTC 2026","TestAdmin","test_admin","",""
+"","525","Ban user","Admin","Fri Oct 30 12:16:59 UTC 2026","passed","Fri Oct 30 12:16:59 UTC 2026","TestAdmin","test_admin","",""
+"","211","Dashboard shows stats","Admin","Fri Oct 30 12:17:02 UTC 2026","passed","Fri Oct 30 12:17:02 UTC 2026","TestAdmin","test_admin","",""
+"","541","UnVerify user","Admin","Fri Oct 30 12:17:01 UTC 2026","passed","Fri Oct 30 12:17:02 UTC 2026","TestAdmin","test_admin","",""
+"","556","Verify user","Admin","Fri Oct 30 12:17:00 UTC 2026","passed","Fri Oct 30 12:17:01 UTC 2026","TestAdmin","test_admin","",""
+"","715","Change role - user to admin","Admin","Fri Oct 30 12:16:58 UTC 2026","passed","Fri Oct 30 12:16:58 UTC 2026","TestAdmin","test_admin","",""
