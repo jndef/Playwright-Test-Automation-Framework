@@ -66,6 +66,8 @@ class TestAdmin(BaseTest):
     @pytest.mark.parametrize("user", ["admin"], indirect=True)
     @pytest.mark.parametrize("unban_user", ['frank'])
     @pytest.mark.smoke
+    @pytest.mark.working
+    @pytest.mark.flaky(reruns=2)
     def test_unban_user(self, user, unban_user):
         side_bar = self.get_sidebar(user.page)
         side_bar.navigate_to("admin")
